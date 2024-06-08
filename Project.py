@@ -19,6 +19,7 @@ from bluepy import btle
 global_motion_detected = False
 global_lock_system = False
 global_deactivate_system = True
+global_potential_break_in_detected = False
 
 # Setup GPIO for PIR sensor
 sensorPin = 18
@@ -48,6 +49,7 @@ class MyDelegate(btle.DefaultDelegate):
 def handle_data(systemActivated, potentialBreakIn):
     global global_lock_system
     global global_deactivate_system
+    global global_potential_break_in_detected
     
     if systemActivated == 0:
         global_lock_system = True
@@ -56,7 +58,10 @@ def handle_data(systemActivated, potentialBreakIn):
         global_lock_system = False
         global_deactivate_system = True
     if potentialBreakIn == 1:
-        handle_motion_detected()
+        global_potential_break_in_detected = True
+    else:
+        global_potential_break_in_detected = False
+    
     print("systemActivated status: ", systemActivated)
     print("potentialBreakIn status: ", potentialBreakIn)
 
@@ -142,7 +147,7 @@ def record_video(duration=10):
 
 def handle_motion_detected():
     global global_motion_detected
-    audio_url = 'https://github.com/Kenneth0120/Task11.2HDProject/blob/main/voice/Warning.m4a?raw=true'
+    audio_url = 'https://github.com/Kenneth0120/Task11.1HDProject/blob/main/voice/Warning%20-%20Copy.m4a?raw=true'
     audio_thread = threading.Thread(target=play_audio_from_url, args=(audio_url,))
     video_thread = threading.Thread(target=record_video, args=(10,))
     audio_thread.start()
@@ -160,6 +165,7 @@ def handle_motion_detected():
 def monitor_motion():
     global global_motion_detected
     global global_lock_system
+    global global_potential_break_in_detected
     
     motion_detected_time = None
     last_state = False
@@ -174,7 +180,7 @@ def monitor_motion():
                 motion_detected_time = time.time()
             
             # If motion is detected for more than 6 seconds
-            if time.time() - motion_detected_time > 6 and global_lock_system:
+            if time.time() - motion_detected_time > 6 and global_lock_system and global_potential_break_in_detected:
                 global_motion_detected = True
                 handle_motion_detected()
                 motion_detected_time = None  # Reset the motion detection timer
@@ -217,7 +223,7 @@ def recognize_speech():
                     active = True
                     failed_attempts = 0
                     time.sleep(1)
-                    play_audio_from_url('https://github.com/Kenneth0120/Task7.2DAudioProcessing/blob/main/Voice/Hi_I_am_Jarvis.m4a?raw=true')
+                    play_audio_from_url('https://github.com/Kenneth0120/Task11.1HDProject/blob/main/voice/Hi_I_am_Jarvis.m4a?raw=true')
                     print("Hi, I am Jarvis. What can I help you?")
 
                 elif active:
@@ -225,14 +231,14 @@ def recognize_speech():
                         system_active(text)
                         failed_attempts = 0  # Reset on successful command
                         time.sleep(1)
-                        play_audio_from_url('https://github.com/Kenneth0120/Task11.2HDProject/blob/main/voice/Locking_System.m4a?raw=true')
+                        play_audio_from_url('https://github.com/Kenneth0120/Task11.1HDProject/blob/main/voice/Locking_System%20-%20Copy.m4a?raw=true')
                         print("Command executed: " + text)
                         print("Ok, no problem. Locking the system")
                     elif any(cmd in text for cmd in ["deactivate system"]):
                         system_active(text)
                         failed_attempts = 0  # Reset on successful command
                         time.sleep(1)
-                        play_audio_from_url('https://github.com/Kenneth0120/Task11.2HDProject/blob/main/voice/Sys_Deactivating.m4a?raw=true')
+                        play_audio_from_url('https://github.com/Kenneth0120/Task11.1HDProject/blob/main/voice/Sys_Deactivating%20-%20Copy.m4a?raw=true')
                         print("Command executed: " + text)
                         print("Ok, no problem. Deactivating the system")
                     else:
@@ -256,7 +262,7 @@ def recognize_speech():
 def sms():
     try:
         account_sid = 'AC8a6254b7879731364be2125214426424'
-        auth_token = 'da00e123bf00b13d02855b4d57f40b6c'
+        auth_token = 'bd4c943c8ce829b41ab76e3ef77b6905'
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
@@ -272,7 +278,7 @@ def call():
     try:
         # Set the environment variables directly for testing
         os.environ['TWILIO_ACCOUNT_SID'] = 'AC8a6254b7879731364be2125214426424'
-        os.environ['TWILIO_AUTH_TOKEN'] = 'da00e123bf00b13d02855b4d57f40b6c'
+        os.environ['TWILIO_AUTH_TOKEN'] = 'bd4c943c8ce829b41ab76e3ef77b6905'
 
         account_sid = os.environ['TWILIO_ACCOUNT_SID']
         auth_token = os.environ['TWILIO_AUTH_TOKEN']
