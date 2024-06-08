@@ -261,8 +261,8 @@ def recognize_speech():
 
 def sms():
     try:
-        account_sid = 'AC8a6254b7879731364be2125214426424'
-        auth_token = 'bd4c943c8ce829b41ab76e3ef77b6905'
+        account_sid = 'Your_account_sid'
+        auth_token = 'Your_auth_token'
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
@@ -277,8 +277,8 @@ def sms():
 def call():
     try:
         # Set the environment variables directly for testing
-        os.environ['TWILIO_ACCOUNT_SID'] = 'AC8a6254b7879731364be2125214426424'
-        os.environ['TWILIO_AUTH_TOKEN'] = 'bd4c943c8ce829b41ab76e3ef77b6905'
+        os.environ['TWILIO_ACCOUNT_SID'] = 'Your_account_sid'
+        os.environ['TWILIO_AUTH_TOKEN'] = 'Your_auth_token'
 
         account_sid = os.environ['TWILIO_ACCOUNT_SID']
         auth_token = os.environ['TWILIO_AUTH_TOKEN']
